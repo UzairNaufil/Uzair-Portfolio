@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uzair Naufil — AI Builder, Karachi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --cream: #FAF7F2;
+      --cream-dark: #F2EDE4;
+      --peach: #F0DDD0;
+      --peach-mid: #E8C9B5;
+      --peach-deep: #C9956E;
+      --brown: #2C1F14;
+      --brown-mid: #5C3D24;
+      --brown-light: #8B6347;
+      --text: #2C1F14;
+      --text-muted: #8B7355;
+      --border: rgba(44,31,20,0.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--cream);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 4rem;
+      background: rgba(250,247,242,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--brown);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--brown); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 8rem 4rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -10%;
+      right: -5%;
+      width: 55%;
+      height: 110%;
+      background: var(--peach);
+      border-radius: 0 0 0 60% / 0 0 0 40%;
+      opacity: 0.45;
+      z-index: 0;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 680px;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--peach-deep);
+      border: 1px solid var(--peach-mid);
+      padding: 0.35rem 0.9rem;
+      border-radius: 2rem;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.2rem, 7vw, 5.5rem);
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      color: var(--brown);
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--peach-deep);
+    }
+
+    .hero-desc {
+      margin-top: 1.75rem;
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 480px;
+      line-height: 1.75;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+
+    .hero-cta {
+      margin-top: 2.5rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      padding: 0.8rem 2rem;
+      background: var(--brown);
+      color: var(--cream);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      border-radius: 2rem;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .btn-primary:hover { background: var(--brown-mid); transform: translateY(-1px); }
+
+    .btn-ghost {
+      display: inline-block;
+      padding: 0.8rem 2rem;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      border-radius: 2rem;
+      transition: border-color 0.2s, color 0.2s, transform 0.15s;
+    }
+
+    .btn-ghost:hover { border-color: var(--brown-light); color: var(--brown); transform: translateY(-1px); }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      animation: fadeUp 0.6s 0.5s ease both;
+    }
+
+    .scroll-line {
+      width: 40px;
+      height: 1px;
+      background: var(--peach-mid);
+    }
+
+    /* SECTIONS */
+    section {
+      padding: 7rem 4rem;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--peach-deep);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-label::after {
+      content: '';
+      display: block;
+      height: 1px;
+      width: 40px;
+      background: var(--peach-mid);
+    }
+
+    /* ME SECTION */
+    #me {
+      background: var(--cream);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .me-left h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.4rem, 4vw, 3.5rem);
+      font-weight: 300;
+      line-height: 1.15;
+      color: var(--brown);
+      margin-bottom: 1.5rem;
+    }
+
+    .me-left h2 em { font-style: italic; color: var(--peach-deep); }
+
+    .me-right {
+      padding-top: 0.5rem;
+    }
+
+    .me-right p {
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.85;
+      margin-bottom: 1.25rem;
+    }
+
+    .me-right p strong {
+      font-weight: 500;
+      color: var(--brown-mid);
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 2rem;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      font-weight: 400;
+      padding: 0.3rem 0.85rem;
+      background: var(--peach);
+      color: var(--brown-mid);
+      border-radius: 2rem;
+      border: 1px solid var(--peach-mid);
+    }
+
+    /* VISION SECTION */
+    #vision {
+      background: var(--brown);
+      color: var(--cream);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #vision::before {
+      content: '';
+      position: absolute;
+      top: -20%;
+      left: -10%;
+      width: 50%;
+      height: 140%;
+      background: var(--brown-mid);
+      border-radius: 50%;
+      opacity: 0.3;
+    }
+
+    #vision .section-label {
+      color: var(--peach-mid);
+      position: relative;
+      z-index: 1;
+    }
+
+    #vision .section-label::after { background: var(--peach-mid); opacity: 0.4; }
+
+    .vision-inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .vision-left h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.4rem, 4vw, 3.5rem);
+      font-weight: 300;
+      line-height: 1.15;
+      color: var(--cream);
+    }
+
+    .vision-left h2 em { font-style: italic; color: var(--peach-mid); }
+
+    .vision-right p {
+      font-size: 1rem;
+      color: rgba(250,247,242,0.65);
+      line-height: 1.85;
+      margin-bottom: 1.25rem;
+    }
+
+    .vision-right p strong {
+      color: var(--peach-mid);
+      font-weight: 500;
+    }
+
+    .vision-stat {
+      margin-top: 2.5rem;
+      padding: 1.5rem;
+      border: 1px solid rgba(250,247,242,0.12);
+      border-radius: 1rem;
+      background: rgba(250,247,242,0.04);
+    }
+
+    .vision-stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--peach-mid);
+      line-height: 1;
+    }
+
+    .vision-stat-label {
+      font-size: 0.8rem;
+      color: rgba(250,247,242,0.5);
+      margin-top: 0.35rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* PROJECTS SECTION */
+    #projects {
+      background: var(--cream-dark);
+    }
+
+    #projects h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.4rem, 4vw, 3.5rem);
+      font-weight: 300;
+      color: var(--brown);
+      margin-bottom: 3.5rem;
+    }
+
+    #projects h2 em { font-style: italic; color: var(--peach-deep); }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .project-card {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      padding: 2.25rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+
+    .project-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 50px rgba(44,31,20,0.08);
+    }
+
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 120px; height: 120px;
+      background: var(--peach);
+      border-radius: 0 1.25rem 0 100%;
+      opacity: 0.5;
+    }
+
+    .project-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 4rem;
+      font-weight: 300;
+      color: var(--peach-mid);
+      line-height: 1;
+      margin-bottom: 1.25rem;
+      opacity: 0.6;
+    }
+
+    .project-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.65rem;
+      font-weight: 400;
+      color: var(--brown);
+      margin-bottom: 0.75rem;
+      line-height: 1.2;
+    }
+
+    .project-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-features {
+      list-style: none;
+      margin-bottom: 1.75rem;
+    }
+
+    .project-features li {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      padding: 0.45rem 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+    }
+
+    .project-features li::before {
+      content: '→';
+      color: var(--peach-deep);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .project-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .stack-tag {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      padding: 0.25rem 0.7rem;
+      background: var(--peach);
+      color: var(--brown-mid);
+      border-radius: 2rem;
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--cream);
+      border-top: 1px solid var(--border);
+      padding: 3rem 4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      color: var(--brown);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .footer-links a {
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--brown); }
+
+    .footer-right {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 860px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1.5rem; }
+      .hero { padding: 7rem 1.5rem 4rem; }
+      .hero-scroll { left: 1.5rem; }
+      section { padding: 5rem 1.5rem; }
+      #me { grid-template-columns: 1fr; gap: 2rem; }
+      .vision-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+      .projects-grid { grid-template-columns: 1fr; }
+      footer { padding: 2rem 1.5rem; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="nav-logo">Uzair Naufil</a>
+    <ul class="nav-links">
+      <li><a href="#me">Me</a></li>
+      <li><a href="#vision">Vision</a></li>
+      <li><a href="#projects">Projects</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="hero-inner">
+      <span class="hero-tag">AI Builder · Karachi, Pakistan</span>
+      <h1>Building the<br /><em>future</em> of AI,<br />one prompt at a time.</h1>
+      <p class="hero-desc">
+        I direct AI to build real products — then audit, pressure-test, and deploy them. Not a developer in the traditional sense. Something newer.
+      </p>
+      <div class="hero-cta">
+        <a href="#projects" class="btn-primary">See my work</a>
+        <a href="#vision" class="btn-ghost">My vision for Karachi</a>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <span class="scroll-line"></span>
+      Scroll to explore
+    </div>
+  </section>
+
+  <!-- ME -->
+  <section id="me">
+    <div class="me-left reveal">
+      <div class="section-label">Who I am</div>
+      <h2>An <em>architect</em> of AI-directed systems.</h2>
+    </div>
+    <div class="me-right reveal">
+      <p>
+        I'm a student at <strong>Aptech Karachi</strong>, enrolled in the 3-year ACCP AI program. But my real education happens outside the classroom — building, shipping, and breaking things with AI.
+      </p>
+      <p>
+        My approach is <strong>AI-directed development</strong>: I define the problem, architect the solution, and direct AI to generate the code. Then I run a multi-AI review pipeline — having separate models audit each other's output for security vulnerabilities and logical gaps before anything ships. I don't write code manually. I build systems.
+      </p>
+      <p>
+        I've shipped two real-world applications using <strong>Claude, Groq API, Ollama, Supabase,</strong> and <strong>WhatsApp Cloud API</strong>. Both solve genuine problems for real users — not academic exercises.
+      </p>
+      <div class="tags">
+        <span class="tag">Claude AI</span>
+        <span class="tag">Groq API</span>
+        <span class="tag">Ollama</span>
+        <span class="tag">Supabase</span>
+        <span class="tag">WhatsApp Cloud API</span>
+        <span class="tag">Python</span>
+        <span class="tag">REST APIs</span>
+        <span class="tag">AI Automations</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISION -->
+  <section id="vision">
+    <div class="section-label">My vision</div>
+    <div class="vision-inner">
+      <div class="vision-left reveal">
+        <h2>Karachi deserves to be on the <em>AI map.</em></h2>
+        <div class="vision-stat">
+          <div class="vision-stat-num">0</div>
+          <div class="vision-stat-label">Official Claude community ambassadors in Pakistan right now</div>
+        </div>
+      </div>
+      <div class="vision-right reveal">
+        <p>
+          Karachi has no Claude community. That is the opportunity — and the reason I'm building one.
+        </p>
+        <p>
+          I'm surrounded by <strong>passionate, ambitious builders</strong> at Aptech who are hungry to work with AI but have no structured space to come together, share knowledge, or collaborate. I want to create that space — somewhere builders in Karachi can gather for free, grow together, and actually ship things.
+        </p>
+        <p>
+          Pakistan risks being left behind in the global AI revolution — <strong>not because of a lack of talent, but because of a lack of community infrastructure.</strong> I want to fix that in my city.
+        </p>
+        <p>
+          My first step: a hands-on AI builders session at Aptech. No slides, no theory. Attendees bring an idea, we build it with Claude in a single session. From there — monthly meetups, and eventually a Karachi AI hackathon.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-label reveal">What I've built</div>
+    <h2 class="reveal">Real products.<br /><em>Real problems</em> solved.</h2>
+    <div class="projects-grid">
+
+      <div class="project-card reveal">
+        <div class="project-num">01</div>
+        <h3 class="project-title">WhatsApp Business Assistant</h3>
+        <p class="project-desc">
+          A full-stack business automation tool built for small business owners — modeled on a clinic. Manages the entire patient and operations workflow through WhatsApp, with separate interfaces for clients and owners.
+        </p>
+        <ul class="project-features">
+          <li>Patient registration with automated number and time slot assignment</li>
+          <li>FAQ handling with seamless admin escalation</li>
+          <li>Owner dashboard: block spam numbers, manage settings</li>
+          <li>On-demand monthly income and expense Excel report generation</li>
+          <li>Dual interface — client-facing and owner-facing, in one bot</li>
+        </ul>
+        <div class="project-stack">
+          <span class="stack-tag">Groq API</span>
+          <span class="stack-tag">Supabase</span>
+          <span class="stack-tag">WhatsApp Cloud API</span>
+          <span class="stack-tag">Python</span>
+        </div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-num">02</div>
+        <h3 class="project-title">AI Automation Assistant</h3>
+        <p class="project-desc">
+          A hybrid local/online AI assistant that handles both file-based and web-based tasks seamlessly — switching between a local model for private operations and an online model for connected queries.
+        </p>
+        <ul class="project-features">
+          <li>File access and manipulation using a local Ollama model</li>
+          <li>URL-based web research — provide a link, get structured information</li>
+          <li>Seamless hybrid routing between local and online intelligence</li>
+          <li>Designed for personal productivity and workflow automation</li>
+        </ul>
+        <div class="project-stack">
+          <span class="stack-tag">Ollama</span>
+          <span class="stack-tag">Groq API</span>
+          <span class="stack-tag">Python</span>
+          <span class="stack-tag">REST APIs</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-name">Uzair Naufil</span>
+    <div class="footer-links">
+      <a href="#me">Me</a>
+      <a href="#vision">Vision</a>
+      <a href="#projects">Projects</a>
+    </div>
+    <span class="footer-right">Karachi, Pakistan · 2026</span>
+  </footer>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
