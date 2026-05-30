@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Uzair Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #1A1612;
+      --bg-card: #120F0C;
+      --bg-elevated: #221D18;
+      --off-white: #FFF5E6;
+      --muted: #7A6A58;
+      --accent: #C8A882;
+      --border: rgba(255,245,230,0.07);
+      --border-hover: rgba(255,245,230,0.15);
+      --danger: #8B3A3A;
+      --success: #2E6B4F;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--off-white);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+    }
+
+    /* ── GATE ── */
+    #gate {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .gate-box {
+      width: 100%;
+      max-width: 380px;
+      border: 1px solid var(--border);
+      padding: 3rem 2.5rem;
+      background: var(--bg-elevated);
+    }
+
+    .gate-box h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--off-white);
+      margin-bottom: 0.4rem;
+    }
+
+    .gate-box p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      letter-spacing: 0.04em;
+    }
+
+    .gate-input {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--off-white);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      padding: 0.85rem 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 1rem;
+    }
+
+    .gate-input:focus { border-color: var(--accent); }
+
+    .gate-btn {
+      width: 100%;
+      background: var(--off-white);
+      color: var(--bg);
+      border: none;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.85rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .gate-btn:hover { opacity: 0.85; }
+
+    .gate-error {
+      font-size: 0.75rem;
+      color: #C87A7A;
+      margin-top: 0.75rem;
+      display: none;
+    }
+
+    /* ── ADMIN PANEL ── */
+    #panel { display: none; }
+
+    .admin-nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(26,22,18,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .admin-nav-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: var(--off-white);
+    }
+
+    .admin-nav-title span {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .nav-actions { display: flex; gap: 0.75rem; align-items: center; }
+
+    .btn {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.55rem 1.25rem;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    .btn-accent { background: var(--off-white); color: var(--bg); }
+    .btn-ghost { background: transparent; border: 1px solid var(--border-hover); color: var(--muted); }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-danger { background: var(--danger); color: var(--off-white); }
+    .btn-success { background: var(--success); color: var(--off-white); }
+
+    .admin-body { padding: 3rem; max-width: 900px; margin: 0 auto; }
+
+    /* PROJECTS LIST */
+    .section-label {
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-label::after {
+      content: '';
+      display: block;
+      height: 1px;
+      flex: 1;
+      background: var(--border);
+    }
+
+    .projects-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); margin-bottom: 3rem; }
+
+    .project-row {
+      background: var(--bg-elevated);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      transition: background 0.15s;
+    }
+
+    .project-row:hover { background: var(--bg-card); }
+
+    .project-row-info { flex: 1; }
+
+    .project-row-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--off-white);
+      margin-bottom: 0.25rem;
+    }
+
+    .project-row-summary {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .project-row-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+
+    .empty-state {
+      background: var(--bg-elevated);
+      padding: 3rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* FORM */
+    .form-box {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      padding: 2.5rem;
+      display: none;
+    }
+
+    .form-box.open { display: block; }
+
+    .form-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--off-white);
+      margin-bottom: 2rem;
+    }
+
+    .form-title em { font-style: italic; color: var(--accent); }
+
+    .form-group { margin-bottom: 1.5rem; }
+
+    .form-label {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--off-white);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 300;
+      padding: 0.85rem 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+      resize: none;
+    }
+
+    .form-input:focus, .form-textarea:focus { border-color: var(--accent); }
+
+    .form-textarea { min-height: 120px; line-height: 1.7; }
+
+    .form-hint {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
+    }
+
+    .form-actions { display: flex; gap: 0.75rem; margin-top: 2rem; flex-wrap: wrap; }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      font-size: 0.82rem;
+      color: var(--off-white);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+      z-index: 999;
+      max-width: 280px;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { border-color: rgba(46,107,79,0.5); }
+    .toast.error { border-color: rgba(139,58,58,0.5); }
+
+    @media (max-width: 600px) {
+      .admin-nav { padding: 1rem 1.5rem; }
+      .admin-body { padding: 1.5rem; }
+      .project-row { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- GATE -->
+  <div id="gate">
+    <div class="gate-box">
+      <h1>Admin</h1>
+      <p>Enter password to continue</p>
+      <input type="password" class="gate-input" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter') checkPassword()" />
+      <button class="gate-btn" onclick="checkPassword()">Enter</button>
+      <p class="gate-error" id="gate-error">Wrong password. Try again.</p>
+    </div>
+  </div>
+
+  <!-- PANEL -->
+  <div id="panel">
+    <nav class="admin-nav">
+      <span class="admin-nav-title">Uzair — <span>Admin</span></span>
+      <div class="nav-actions">
+        <button class="btn btn-accent" onclick="openForm()">+ Add Project</button>
+        <button class="btn btn-ghost" onclick="location.href='index.html'">← View Site</button>
+      </div>
+    </nav>
+
+    <div class="admin-body">
+
+      <!-- PROJECTS -->
+      <div class="section-label">Your Projects</div>
+      <div class="projects-list" id="projects-list">
+        <div class="empty-state">Loading...</div>
+      </div>
+
+      <!-- FORM -->
+      <div class="section-label">Project Form</div>
+      <div class="form-box" id="form-box">
+        <h2 class="form-title" id="form-title">Add <em>New Project</em></h2>
+
+        <input type="hidden" id="edit-id" />
+
+        <div class="form-group">
+          <label class="form-label">Project Title</label>
+          <input type="text" class="form-input" id="f-title" placeholder="e.g. WhatsApp Business Assistant" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Short Summary <span style="color:var(--muted);font-size:0.65rem;">(shown on card)</span></label>
+          <input type="text" class="form-input" id="f-summary" placeholder="One line describing what it does" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Full Description <span style="color:var(--muted);font-size:0.65rem;">(shown in detail panel)</span></label>
+          <textarea class="form-textarea" id="f-desc" placeholder="Explain the project in detail — what problem it solves, how it works, who uses it."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Features</label>
+          <textarea class="form-textarea" id="f-features" placeholder="One feature per line&#10;e.g. Patient registration with time slot assignment&#10;FAQ handling with admin escalation"></textarea>
+          <p class="form-hint">One feature per line</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tech Stack</label>
+          <input type="text" class="form-input" id="f-stack" placeholder="e.g. Groq API, Supabase, WhatsApp Cloud API, Python" />
+          <p class="form-hint">Comma separated</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">GitHub Link <span style="color:var(--muted);font-size:0.65rem;">(optional)</span></label>
+          <input type="text" class="form-input" id="f-github" placeholder="https://github.com/..." />
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-accent" onclick="saveProject()">Save Project</button>
+          <button class="btn btn-ghost" onclick="closeForm()">Cancel</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // ─────────────────────────────────────────
+    // PASTE YOUR SUPABASE CREDENTIALS HERE
+    const SUPABASE_URL  = 'https://khlkbodmeexczjpzhylp.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtobGtib2RtZWV4Y3pqcHpoeWxwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwODM4ODEsImV4cCI6MjA5NTY1OTg4MX0.pSTtm01PEaaVwE-iKwrIq87egdAyRvmCDvkaIs0Jnf8';
+    // ─────────────────────────────────────────
+
+    // ─────────────────────────────────────────
+    // SET YOUR ADMIN PASSWORD HERE
+    const ADMIN_PASSWORD = 'uzair_naufil_admin';
+    // ─────────────────────────────────────────
+
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    // GATE
+    function checkPassword() {
+      const val = document.getElementById('pw-input').value;
+      if (val === ADMIN_PASSWORD) {
+        document.getElementById('gate').style.display = 'none';
+        document.getElementById('panel').style.display = 'block';
+        loadProjects();
+      } else {
+        document.getElementById('gate-error').style.display = 'block';
+        document.getElementById('pw-input').value = '';
+        document.getElementById('pw-input').focus();
+      }
+    }
+
+    // LOAD PROJECTS
+    async function loadProjects() {
+      const list = document.getElementById('projects-list');
+      list.innerHTML = '<div class="empty-state">Loading...</div>';
+      const { data, error } = await sb.from('projects').select('*').order('created_at', { ascending: true });
+      if (error || !data || data.length === 0) {
+        list.innerHTML = '<div class="empty-state">No projects yet. Add your first one above.</div>';
+        return;
+      }
+      list.innerHTML = data.map((p, i) => `
+        <div class="project-row">
+          <div class="project-row-info">
+            <div class="project-row-title">0${i+1} — ${p.title}</div>
+            <div class="project-row-summary">${p.summary}</div>
+          </div>
+          <div class="project-row-actions">
+            <button class="btn btn-ghost" onclick="editProject(${JSON.stringify(p).replace(/"/g, '&quot;')})">Edit</button>
+            <button class="btn btn-danger" onclick="deleteProject('${p.id}')">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // OPEN FORM (ADD)
+    function openForm() {
+      document.getElementById('form-title').innerHTML = 'Add <em>New Project</em>';
+      document.getElementById('edit-id').value = '';
+      document.getElementById('f-title').value = '';
+      document.getElementById('f-summary').value = '';
+      document.getElementById('f-desc').value = '';
+      document.getElementById('f-features').value = '';
+      document.getElementById('f-stack').value = '';
+      document.getElementById('f-github').value = '';
+      document.getElementById('form-box').classList.add('open');
+      document.getElementById('form-box').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // OPEN FORM (EDIT)
+    function editProject(p) {
+      document.getElementById('form-title').innerHTML = 'Edit <em>Project</em>';
+      document.getElementById('edit-id').value = p.id;
+      document.getElementById('f-title').value = p.title || '';
+      document.getElementById('f-summary').value = p.summary || '';
+      document.getElementById('f-desc').value = p.description || '';
+      document.getElementById('f-features').value = (p.features || []).join('\n');
+      document.getElementById('f-stack').value = (p.stack || []).join(', ');
+      document.getElementById('f-github').value = p.github || '';
+      document.getElementById('form-box').classList.add('open');
+      document.getElementById('form-box').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function closeForm() {
+      document.getElementById('form-box').classList.remove('open');
+    }
+
+    // SAVE PROJECT
+    async function saveProject() {
+      const id       = document.getElementById('edit-id').value;
+      const title    = document.getElementById('f-title').value.trim();
+      const summary  = document.getElementById('f-summary').value.trim();
+      const desc     = document.getElementById('f-desc').value.trim();
+      const features = document.getElementById('f-features').value.split('\n').map(f => f.trim()).filter(Boolean);
+      const stack    = document.getElementById('f-stack').value.split(',').map(s => s.trim()).filter(Boolean);
+      const github   = document.getElementById('f-github').value.trim();
+
+      if (!title || !summary) { showToast('Title and summary are required.', 'error'); return; }
+
+      const payload = { title, summary, description: desc, features, stack, github };
+
+      let error;
+      if (id) {
+        ({ error } = await sb.from('projects').update(payload).eq('id', id));
+      } else {
+        ({ error } = await sb.from('projects').insert(payload));
+      }
+
+      if (error) { showToast('Something went wrong. Check Supabase.', 'error'); return; }
+
+      showToast(id ? 'Project updated.' : 'Project added.', 'success');
+      closeForm();
+      loadProjects();
+    }
+
+    // DELETE
+    async function deleteProject(id) {
+      if (!confirm('Delete this project? This cannot be undone.')) return;
+      const { error } = await sb.from('projects').delete().eq('id', id);
+      if (error) { showToast('Could not delete.', 'error'); return; }
+      showToast('Project deleted.', 'success');
+      loadProjects();
+    }
+
+    // TOAST
+    function showToast(msg, type = 'success') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `toast ${type} show`;
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+  </script>
+</body>
+</html>
