@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlas Orb v2 — NUXTROX</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:Georgia,serif;}
+  canvas{display:block;border-radius:16px;}
+  #ui{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:22px;}
+  .btn-state{font-family:Georgia,serif;font-size:11px;letter-spacing:2px;padding:6px 18px;border-radius:2px;cursor:pointer;background:#0a0a0a;transition:all 0.3s;}
+  .btn-state:hover{background:#1a1508;}
+  #micBtn{font-family:Georgia,serif;font-size:11px;letter-spacing:2px;padding:5px 18px;border-radius:2px;cursor:pointer;background:#0a0a0a;border:1px solid #444;color:#666;transition:all 0.3s;}
+  #quality{font-family:Georgia,serif;font-size:11px;background:#0a0a0a;color:#555;border:1px solid #333;padding:5px 10px;border-radius:2px;}
+  #stateLabel{font-family:Georgia,serif;font-size:10px;letter-spacing:4px;color:#555;}
+  #brand{font-family:Georgia,serif;font-size:10px;letter-spacing:6px;color:#2a2010;margin-top:18px;}
+</style>
+</head>
+<body>
+
+<canvas id="orb"></canvas>
+
+<div id="ui">
+  <div style="display:flex;gap:8px;">
+    <button class="btn-state" onclick="setState('idle')"   id="s0" style="border:1px solid #C9A84C;color:#C9A84C;">IDLE</button>
+    <button class="btn-state" onclick="setState('listen')" id="s1" style="border:1px solid #333;color:#444;">LISTENING</button>
+    <button class="btn-state" onclick="setState('think')"  id="s2" style="border:1px solid #333;color:#444;">THINKING</button>
+    <button class="btn-state" onclick="setState('speak')"  id="s3" style="border:1px solid #333;color:#444;">SPEAKING</button>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <button id="micBtn" onclick="toggleMic()">MIC OFF</button>
+    <select id="quality" onchange="setQuality(this.value)">
+      <option value="low">LOW — 180</option>
+      <option value="med" selected>MED — 280</option>
+      <option value="high">HIGH — 400</option>
+    </select>
+    <div id="stateLabel">IDLE</div>
+  </div>
+</div>
+
+<div id="brand">NUXTROX</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────
+const CFG = {
+  quality: 'med',
+  particleCounts: {low:180, med:280, high:400},
+  rotation:  {base:0.0014, active:0.0020},
+  curl:      {base:0.007},
+  damping:   {lat:0.74, lon:0.74},
+  transition:{sec:0.55},
+  glow:      {idle:0.07, listen:0.28, think:0.18, speak:0.36},
+  burst:     {idle:3,    listen:20,   think:8,    speak:24},
+  wave: {
+    speed:  2.8,
+    decay:  1.6,
+    lift:   34,
+    count:  6,
+    minAmp: 0.08,
+  },
+};
+
+// ── CANVAS — RESPONSIVE ───────────────────────────────────────────
+const cv = document.getElementById('orb');
+const ctx = cv.getContext('2d');
+let W,H,cx,cy,SR;
+function resize(){
+  W = Math.min(window.innerWidth - 40, 780);
+  H = Math.min(W * 0.70, 520);
+  cv.width=W; cv.height=H;
+  cv.style.width=W+'px'; cv.style.height=H+'px';
+  cx=W/2; cy=H/2-8; SR=Math.min(W,H)*0.300;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// ── SIMPLEX NOISE ─────────────────────────────────────────────────
+const _p=(()=>{const a=[...Array(256)].map((_,i)=>i);for(let i=255;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;})();
+const P=new Uint8Array(512);for(let i=0;i<512;i++)P[i]=_p[i&255];
+const F2=0.5*(Math.sqrt(3)-1),G2=(3-Math.sqrt(3))/6;
+const GV=[[1,1],[-1,1],[1,-1],[-1,-1],[1,0],[-1,0],[0,1],[0,-1]];
+function sn(x,y){
+  const s=(x+y)*F2,i=Math.floor(x+s),j=Math.floor(y+s);
+  const t=(i+j)*G2,x0=x-(i-t),y0=y-(j-t);
+  const i1=x0>y0?1:0,j1=x0>y0?0:1;
+  const x1=x0-i1+G2,y1=y0-j1+G2,x2=x0-1+2*G2,y2=y0-1+2*G2;
+  const ii=i&255,jj=j&255;
+  const g0=P[ii+P[jj]]%8,g1=P[ii+i1+P[jj+j1]]%8,g2i=P[ii+1+P[jj+1]]%8;
+  let n=0,t0=0.5-x0*x0-y0*y0,t1=0.5-x1*x1-y1*y1,t2=0.5-x2*x2-y2*y2;
+  if(t0>=0){t0*=t0;n+=t0*t0*(GV[g0][0]*x0+GV[g0][1]*y0);}
+  if(t1>=0){t1*=t1;n+=t1*t1*(GV[g1][0]*x1+GV[g1][1]*y1);}
+  if(t2>=0){t2*=t2;n+=t2*t2*(GV[g2i][0]*x2+GV[g2i][1]*y2);}
+  return 70*n;
+}
+const EPS=0.01;
+function curlSphere(lat,lon,t,str){
+  const dLat=(sn(lat+t*0.18,lon+EPS)-sn(lat+t*0.18,lon-EPS))/(2*EPS)*str;
+  const dLon=(sn(lat+EPS,lon+t*0.18)-sn(lat-EPS,lon+t*0.18))/(2*EPS)*str/Math.max(Math.abs(Math.cos(lat)),0.12);
+  return{dLat,dLon};
+}
+
+// ── WAVE SYSTEM ───────────────────────────────────────────────────
+const waves=[];
+function spawnWave(amplitude){
+  if(waves.length>=CFG.wave.count) waves.shift();
+  // Random point on unit sphere
+  const th=Math.random()*Math.PI*2, ph=Math.acos(2*Math.random()-1);
+  waves.push({
+    ox:Math.sin(ph)*Math.cos(th),
+    oy:Math.sin(ph)*Math.sin(th),
+    oz:Math.cos(ph),
+    radius:0,
+    amp:amplitude,
+  });
+}
+function angDist(ax,ay,az,bx,by,bz){
+  return Math.acos(Math.max(-1,Math.min(1,ax*bx+ay*by+az*bz)));
+}
+function waveDisplace(ux,uy,uz){
+  let total=0;
+  for(let i=0;i<waves.length;i++){
+    const w=waves[i];
+    const dist=angDist(ux,uy,uz,w.ox,w.oy,w.oz);
+    const diff=dist-w.radius;
+    const width=0.38;
+    if(Math.abs(diff)<width){
+      const profile=Math.cos((diff/width)*(Math.PI/2));
+      const decay=Math.exp(-w.radius*CFG.wave.decay);
+      total+=profile*w.amp*decay*CFG.wave.lift;
+    }
+  }
+  return total;
+}
+
+// ── PARTICLES ─────────────────────────────────────────────────────
+let dots=[];
+const PHI=Math.PI*(3-Math.sqrt(5));
+function buildParticles(n){
+  dots=[];
+  for(let i=0;i<n;i++){
+    const y=1-(i/(n-1))*2,r=Math.sqrt(1-y*y),th=PHI*i;
+    dots.push({
+      lat:Math.asin(Math.max(-1,Math.min(1,y))),
+      lon:Math.atan2(r*Math.sin(th),r*Math.cos(th)),
+      seed:Math.random()*100,
+      phase:Math.random()*Math.PI*2,
+      pAmp:0.5+Math.random()*0.9,
+      velLat:0,velLon:0,
+    });
+  }
+}
+buildParticles(CFG.particleCounts[CFG.quality]);
+function setQuality(q){CFG.quality=q;buildParticles(CFG.particleCounts[q]);}
+
+// ── STATE ─────────────────────────────────────────────────────────
+const STATES=['idle','listen','think','speak'];
+const BIDS=['s0','s1','s2','s3'];
+let currentState='idle',prevState='idle',transT=1.0;
+let smoothAmp=0,lastWaveSpawn=0;
+
+function setState(s){
+  if(s===currentState)return;
+  prevState=currentState;currentState=s;transT=0;
+  BIDS.forEach((id,i)=>{
+    const b=document.getElementById(id);
+    b.style.borderColor=STATES[i]===s?'#C9A84C':'#333';
+    b.style.color=STATES[i]===s?'#C9A84C':'#444';
+  });
+  document.getElementById('stateLabel').textContent=s.toUpperCase();
+  if(s==='listen'&&!micOn) toggleMic();
+}
+setState('idle');
+
+function lerp(a,b,t){return a+(b-a)*t;}
+function ease(t){return t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
+
+// ── AUDIO ─────────────────────────────────────────────────────────
+let analyser=null,dataArr=null,micOn=false,audioCtx=null,micStream=null;
+async function toggleMic(){
+  if(micOn){stopMic();return;}
+  try{
+    micStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+    audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    const src=audioCtx.createMediaStreamSource(micStream);
+    analyser=audioCtx.createAnalyser();
+    analyser.fftSize=256;analyser.smoothingTimeConstant=0.75;
+    src.connect(analyser);
+    dataArr=new Uint8Array(analyser.frequencyBinCount);
+    micOn=true;
+    const b=document.getElementById('micBtn');
+    b.textContent='MIC ON';b.style.borderColor='#C9A84C';b.style.color='#C9A84C';
+  }catch(e){
+    document.getElementById('stateLabel').textContent='MIC DENIED';
+  }
+}
+function stopMic(){
+  if(micStream)micStream.getTracks().forEach(t=>t.stop());
+  if(audioCtx)audioCtx.close();
+  analyser=null;micOn=false;smoothAmp=0;
+  const b=document.getElementById('micBtn');
+  b.textContent='MIC OFF';b.style.borderColor='#444';b.style.color='#666';
+}
+function getRawAmp(){
+  if(!analyser||!dataArr)return 0;
+  analyser.getByteFrequencyData(dataArr);
+  let s=0;for(let i=2;i<20;i++)s+=dataArr[i];
+  return Math.min(s/(18*255),1);
+}
+
+// ── ROTATION ──────────────────────────────────────────────────────
+let rotY=0;
+const rotXA=0.20;
+function rot(x,y,z){
+  const x2=x*Math.cos(rotY)+z*Math.sin(rotY);
+  const z2=-x*Math.sin(rotY)+z*Math.cos(rotY);
+  return{x:x2,y:y*Math.cos(rotXA)-z2*Math.sin(rotXA),z:y*Math.sin(rotXA)+z2*Math.cos(rotXA)};
+}
+
+// ── DRAW ──────────────────────────────────────────────────────────
+function drawSphere(glow,pa){
+  // Shadow
+  const shd=ctx.createRadialGradient(cx,cy+SR*0.90,SR*0.08,cx,cy+SR*0.90,SR*0.82);
+  shd.addColorStop(0,`rgba(201,168,76,${0.06+pa*0.05})`);
+  shd.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.beginPath();ctx.ellipse(cx,cy+SR*0.86,SR*0.70,SR*0.16,0,0,Math.PI*2);
+  ctx.fillStyle=shd;ctx.fill();
+
+  // Base sphere
+  const bg=ctx.createRadialGradient(cx-SR*0.28,cy-SR*0.28,SR*0.04,cx+SR*0.08,cy+SR*0.08,SR*1.04);
+  bg.addColorStop(0,'#1e1408');bg.addColorStop(0.3,'#111');
+  bg.addColorStop(0.8,'#070707');bg.addColorStop(1,'#020202');
+  ctx.beginPath();ctx.arc(cx,cy,SR,0,Math.PI*2);
+  ctx.fillStyle=bg;ctx.fill();
+
+  // Specular highlight
+  const sp=ctx.createRadialGradient(cx-SR*0.30,cy-SR*0.34,1,cx-SR*0.14,cy-SR*0.16,SR*0.50);
+  sp.addColorStop(0,`rgba(255,232,148,${0.08+glow*0.16})`);
+  sp.addColorStop(0.55,`rgba(201,168,76,${0.02+glow*0.05})`);
+  sp.addColorStop(1,'rgba(201,168,76,0)');
+  ctx.beginPath();ctx.arc(cx,cy,SR,0,Math.PI*2);
+  ctx.fillStyle=sp;ctx.fill();
+
+  // Thinking shimmer
+  if(currentState==='think'||prevState==='think'){
+    const tb=currentState==='think'?ease(transT):1-ease(transT);
+    if(tb>0.01){
+      for(let i=0;i<3;i++){
+        const a=T*1.2+i*(Math.PI*2/3);
+        const gs=ctx.createRadialGradient(
+          cx+Math.cos(a)*SR*0.38,cy+Math.sin(a)*SR*0.38,SR*0.04,
+          cx+Math.cos(a)*SR*0.38,cy+Math.sin(a)*SR*0.38,SR*0.52
+        );
+        gs.addColorStop(0,`rgba(201,168,76,${0.09*tb})`);
+        gs.addColorStop(1,'rgba(201,168,76,0)');
+        ctx.beginPath();ctx.arc(cx,cy,SR,0,Math.PI*2);
+        ctx.fillStyle=gs;ctx.fill();
+      }
+    }
+  }
+
+  // Rim glow
+  const rim=ctx.createRadialGradient(cx,cy,SR*0.80,cx,cy,SR*1.08);
+  rim.addColorStop(0,'rgba(201,168,76,0)');
+  rim.addColorStop(0.55,`rgba(201,168,76,${0.03+glow*0.16})`);
+  rim.addColorStop(1,`rgba(201,168,76,${0.07+glow*0.46})`);
+  ctx.beginPath();ctx.arc(cx,cy,SR,0,Math.PI*2);
+  ctx.fillStyle=rim;ctx.fill();
+}
+
+function drawDot(px,py,r,depth){
+  if(r<0.3)return;
+  const fb=0.12+depth*0.58;
+  const g=ctx.createRadialGradient(px-r*0.36,py-r*0.40,r*0.04,px,py,r);
+  g.addColorStop(0,`rgba(255,238,155,${0.42+fb})`);
+  g.addColorStop(0.42,`rgba(201,168,76,${0.48+fb*0.55})`);
+  g.addColorStop(1,`rgba(72,50,6,${0.28+depth*0.38})`);
+  ctx.beginPath();ctx.arc(px,py,r,0,Math.PI*2);
+  ctx.fillStyle=g;ctx.fill();
+}
+
+// ── MAIN LOOP ─────────────────────────────────────────────────────
+let T=0,rafId=null;
+
+function frame(){
+  T+=0.016;
+  if(transT<1) transT=Math.min(1,transT+(0.016/CFG.transition.sec));
+  const te=ease(transT);
+
+  // Amplitude
+  let rawAmp=0;
+  if(currentState==='listen'&&micOn){
+    rawAmp=getRawAmp();
+    if(rawAmp>smoothAmp) smoothAmp+=(rawAmp-smoothAmp)*0.60;
+    else smoothAmp+=(rawAmp-smoothAmp)*0.07;
+  } else if(currentState==='speak'){
+    rawAmp=0.18+Math.abs(Math.sin(T*2.0))*0.24+Math.abs(Math.sin(T*5.1+0.9))*0.13+Math.abs(Math.sin(T*12.3+2.0))*0.06;
+    if(rawAmp>smoothAmp) smoothAmp+=(rawAmp-smoothAmp)*0.45;
+    else smoothAmp+=(rawAmp-smoothAmp)*0.10;
+  } else {
+    smoothAmp*=0.90;
+  }
+
+  const idleBreath=(currentState==='idle')?0.010+Math.sin(T*0.62)*0.007:0;
+  const pa=(currentState==='listen'||currentState==='speak')?smoothAmp:idleBreath;
+
+  // Wave spawning
+  const canSpawn=(currentState==='listen'||currentState==='speak');
+  if(canSpawn&&smoothAmp>CFG.wave.minAmp&&(T-lastWaveSpawn)>0.18){
+    spawnWave(smoothAmp);
+    lastWaveSpawn=T;
+  }
+  if(currentState==='idle'&&T-lastWaveSpawn>3.5){
+    spawnWave(0.12);
+    lastWaveSpawn=T;
+  }
+
+  // Advance waves
+  for(let i=waves.length-1;i>=0;i--){
+    waves[i].radius+=CFG.wave.speed*0.016;
+    if(waves[i].radius>Math.PI) waves.splice(i,1);
+  }
+
+  // Interpolated values
+  const gGet=s=>CFG.glow[s]||CFG.glow.idle;
+  const bGet=s=>CFG.burst[s]||CFG.burst.idle;
+  const tGlow=lerp(gGet(prevState),gGet(currentState),te);
+  const tBurst=lerp(bGet(prevState),bGet(currentState),te);
+
+  rotY+=lerp(CFG.rotation.base,CFG.rotation.active,te);
+  const curlStr=CFG.curl.base+(currentState==='idle'?0:0.003);
+  const baseR=SR+pa*tBurst+(idleBreath*SR*0.04);
+
+  // Update particles
+  dots.forEach(d=>{
+    const{dLat,dLon}=curlSphere(d.lat+d.seed,d.lon+d.seed,T,curlStr);
+    const kick=pa*d.pAmp*0.005;
+    d.velLat+=dLat+(Math.random()-0.5)*kick;
+    d.velLon+=dLon+(Math.random()-0.5)*kick;
+    d.velLat*=CFG.damping.lat;
+    d.velLon*=CFG.damping.lon;
+    d.lat=Math.max(-Math.PI/2+0.05,Math.min(Math.PI/2-0.05,d.lat+d.velLat));
+    d.lon+=d.velLon;
+    if(d.lon>Math.PI)d.lon-=Math.PI*2;
+    if(d.lon<-Math.PI)d.lon+=Math.PI*2;
+  });
+
+  ctx.fillStyle='#0a0a0a';ctx.fillRect(0,0,W,H);
+  drawSphere(tGlow,pa);
+
+  // Project, wave-displace, sort, draw
+  const proj=dots.map(d=>{
+    const cl=Math.cos(d.lat);
+    const ux=cl*Math.cos(d.lon),uy=Math.sin(d.lat),uz=cl*Math.sin(d.lon);
+    const p=rot(ux,uy,uz);
+    const lift=waveDisplace(ux,uy,uz);
+    const r=baseR+lift;
+    const depth=(p.z+1)/2;
+    return{px:cx+p.x*r,py:cy+p.y*r,pz:p.z,depth,pAmp:d.pAmp};
+  });
+
+  proj.sort((a,b)=>a.pz-b.pz);
+  proj.forEach(d=>{
+    if(d.depth<0.04)return;
+    const baseSize=1.6+d.depth*3.4;
+    const soundSize=pa*d.pAmp*3.5*d.depth;
+    drawDot(d.px,d.py,baseSize+soundSize,d.depth);
+  });
+
+  ctx.font='400 12px Georgia,serif';
+  ctx.fillStyle=`rgba(201,168,76,${0.18+tGlow*1.8})`;
+  ctx.textAlign='center';
+  ctx.fillText('A  T  L  A  S',cx,cy+SR+44);
+
+  rafId=requestAnimationFrame(frame);
+}
+
+// Pause when hidden
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){cancelAnimationFrame(rafId);rafId=null;}
+  else if(!rafId) rafId=requestAnimationFrame(frame);
+});
+
+frame();
+</script>
+</body>
+</html>
