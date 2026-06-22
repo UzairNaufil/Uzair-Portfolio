@@ -87,6 +87,20 @@
       overflow: hidden;
     }
 
+    #sketch-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none; /* Let clicks pass through to buttons */
+      z-index: 0;
+      opacity: 0.85;
+      
+      /* Apply the hand-drawn SVG filter we created */
+      filter: url(#sketchy-pencil); 
+    }
+
     .hero::before {
       content: '';
       position: absolute;
@@ -637,6 +651,17 @@
   </style>
 </head>
 <body>
+  <!-- Hidden SVG filter that makes digital lines look hand-drawn -->
+  <svg style="display: none;">
+    <defs>
+      <filter id="sketchy-pencil">
+        <!-- Generate rough, organic noise -->
+        <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" result="noise" />
+        <!-- Displace the drawing lines based on that noise -->
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
+  </svg>
 
   <nav>
     <a href="#" class="nav-logo">Uzair Naufil</a>
@@ -649,6 +674,9 @@
 
   <!-- HERO -->
   <section class="hero">
+    <!-- Interactive 3D sketch canvas -->
+    <canvas id="sketch-canvas"></canvas>
+
     <div class="hero-inner">
       <div class="hero-tag">AI Builder · Karachi, Pakistan</div>
       <h1>UZAIR<br><em>NAUFIL</em></h1>
@@ -713,20 +741,6 @@
       <div class="projects-loading">Loading projects...</div>
     </div>
   </section>
-
-  <!-- 
-  ═══════════════════════════════════════════════════════
-  CERTIFICATES SECTION — ADD WHEN READY
-  ═══════════════════════════════════════════════════════
-  Suggested content per certificate:
-    - Certificate name
-    - Issuing organization  
-    - Date issued
-    - Verification link (optional)
-  
-  Design hint: use the same card style as project cards
-  ═══════════════════════════════════════════════════════
-  -->
 
   <!-- FOOTER -->
   <footer>
@@ -816,6 +830,97 @@
 
     observeReveal();
     loadProjects();
+
+    // ─────────────────────────────────────────
+    // 3D SKETCH CANVAS ENGINE
+    // ─────────────────────────────────────────
+    function init3DSketch() {
+      const canvas = document.getElementById('sketch-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      
+      let width = canvas.width = canvas.offsetWidth;
+      let height = canvas.height = canvas.offsetHeight;
+      
+      window.addEventListener('resize', () => {
+        width = canvas.width = canvas.offsetWidth;
+        height = canvas.height = canvas.offsetHeight;
+      });
+
+      let mouseX = 0;
+      let mouseY = 0;
+      
+      window.addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX / window.innerWidth) - 0.5;
+        mouseY = (e.clientY / window.innerHeight) - 0.5;
+      });
+
+      let angleY = 0;
+      let angleX = 0;
+      let time = 0;
+
+      function draw() {
+        ctx.clearRect(0, 0, width, height);
+        
+        angleY += (mouseX * 0.5 - angleY) * 0.05;
+        angleX += (mouseY * 0.5 - angleX) * 0.05;
+        time += 0.005;
+
+        const cosY = Math.cos(angleY);
+        const sinY = Math.sin(angleY);
+        const cosX = Math.cos(angleX);
+        const sinX = Math.sin(angleX);
+
+        const numLines = 6;
+        const pointsPerLine = 60;
+        
+        ctx.lineWidth = 1.2;
+
+        for (let l = 0; l < numLines; l++) {
+          if (l % 3 === 0) ctx.strokeStyle = 'rgba(200, 168, 130, 0.4)'; // Sand (#C8A882)
+          else if (l % 3 === 1) ctx.strokeStyle = 'rgba(122, 106, 88, 0.25)'; // Soil (#7A6A58)
+          else ctx.strokeStyle = 'rgba(255, 245, 230, 0.15)'; // Clay Highlight (#FFF5E6)
+
+          ctx.beginPath();
+
+          for (let p = 0; p < pointsPerLine; p++) {
+            const t = (p / pointsPerLine) * Math.PI * 2;
+            const offset = l * 0.5;
+            
+            let x3d = Math.sin(t + time) * 200;
+            let y3d = Math.cos(t * 2 + time + offset) * 80 + (l - numLines / 2) * 40;
+            let z3d = Math.sin(t * 3 - time) * 150;
+
+            let x1 = x3d * cosY - z3d * sinY;
+            let z1 = x3d * sinY + z3d * cosY;
+            
+            let y2 = y3d * cosX - z1 * sinX;
+            let z2 = y3d * sinX + z1 * cosX;
+
+            const distance = 400;
+            const fov = 500;
+            const scale = fov / (distance + z2);
+            
+            const screenX = (width / 2) + x1 * scale;
+            const screenY = (height / 2) + y2 * scale;
+
+            if (p === 0) {
+              ctx.moveTo(screenX, screenY);
+            } else {
+              ctx.lineTo(screenX, screenY);
+            }
+          }
+          ctx.stroke();
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      draw();
+    }
+
+    // Run the 3D sketch background
+    init3DSketch();
   </script>
 </body>
 </html>
