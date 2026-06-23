@@ -1,0 +1,99 @@
+/* General reset and base styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f3f7f4; /* Soft, very light mint-grey background */
+    color: #1e2d24;            /* Dark forest-slate text for high readability */
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+/* Header style with a deep green and gold theme */
+header {
+    background-color: #0b4626; /* Deep Pakistani emerald green */
+    color: #ffffff;            /* Clean white text */
+    text-align: center;
+    padding: 2.5rem 1rem;
+    border-bottom: 4px solid #d4af37; /* Metallic gold bottom accent line */
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.6rem;
+    letter-spacing: 1px;
+}
+
+header p {
+    margin: 0.5rem 0 0 0;
+    font-size: 1.1rem;
+    color: #ececec;
+}
+
+/* Main wrapper to center-align the page content */
+main {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+/* Image styling */
+.tour-banner {
+    width: 100%;
+    height: auto;
+    border-radius: 8px; /* Smooth corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Soft drop shadow */
+    margin-top: 1.2rem;
+    margin-bottom: 1.2rem;
+}
+
+/* Custom list box styling for the packages */
+.packages-section ul {
+    background-color: #ffffff; 
+    padding: 1.5rem 2.2rem;
+    border-left: 6px solid #d4af37; /* Gold accent bar on the left side */
+    border-radius: 4px;
+    list-style-type: circle;
+}
+
+.packages-section li {
+    margin-bottom: 0.8rem;
+    font-size: 1.05rem;
+}
+
+/* Highlight boxes (Call-to-Action) */
+.booking-section {
+    text-align: center;
+    background-color: #e2ede6; /* Light green tint box */
+    padding: 2.2rem;
+    border-radius: 8px;
+    margin-top: 2.5rem;
+}
+
+/* Converting a standard <a> tag into a professional button */
+.booking-button {
+    display: inline-block;
+    background-color: #0b4626; /* Deep green button background */
+    color: #ffffff;            /* Button text color */
+    padding: 0.8rem 1.8rem;
+    text-decoration: none;     /* Removes standard blue link underline */
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+/* Hover style for the button interaction */
+.booking-button:hover {
+    background-color: #d4af37; /* Changes to gold on hover */
+    color: #1e2d24;            /* Changes text to dark green for contrast */
+}
+
+/* Footer layout and colors */
+footer {
+    text-align: center;
+    background-color: #1a1a1a; /* Dark charcoal grey */
+    color: #a0a0a0;            /* Muted grey text */
+    padding: 1.5rem;
+    margin-top: 4rem;
+    font-size: 0.9rem;
+}
