@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uzair Naufil — AI Builder, Karachi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #1A1612;
+      --bg-card: #120F0C;
+      --bg-elevated: #221D18;
+      --off-white: #FFF5E6;
+      --muted: #7A6A58;
+      --accent: #C8A882;
+      --border: rgba(255,245,230,0.07);
+      --border-hover: rgba(255,245,230,0.15);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--off-white);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 2px; }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 4rem;
+      background: rgba(26,22,18,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: var(--off-white);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.72rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--off-white); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 8rem 4rem 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -100px; right: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(200,168,130,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: 'UN';
+      position: absolute;
+      right: 2rem;
+      bottom: -0.1em;
+      font-family: 'Playfair Display', serif;
+      font-size: 22rem;
+      font-weight: 900;
+      color: rgba(255,245,230,0.025);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 700px;
+    }
+
+    .hero-tag {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .hero-tag::before {
+      content: '';
+      display: block;
+      width: 30px;
+      height: 1px;
+      background: var(--accent);
+      opacity: 0.5;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(4rem, 9vw, 7.5rem);
+      font-weight: 900;
+      line-height: 0.9;
+      letter-spacing: -0.02em;
+      color: var(--off-white);
+      animation: fadeUp 0.7s 0.1s ease both;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+      display: block;
+    }
+
+    .hero-desc {
+      margin-top: 2rem;
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 440px;
+      line-height: 1.8;
+      font-weight: 300;
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
+
+    .hero-cta {
+      margin-top: 2.5rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      animation: fadeUp 0.7s 0.3s ease both;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      padding: 0.8rem 2.2rem;
+      background: var(--off-white);
+      color: var(--bg);
+      text-decoration: none;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .btn-primary:hover { opacity: 0.85; transform: translateY(-2px); }
+
+    .btn-ghost {
+      display: inline-block;
+      padding: 0.8rem 2.2rem;
+      border: 1px solid var(--border-hover);
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: border-color 0.2s, color 0.2s, transform 0.15s;
+    }
+
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    /* SECTIONS */
+    section { padding: 7rem 4rem; }
+
+    .section-eyebrow {
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-eyebrow::after {
+      content: '';
+      display: block;
+      height: 1px;
+      width: 30px;
+      background: var(--accent);
+      opacity: 0.4;
+    }
+
+    /* ME */
+    #me {
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 6rem;
+      align-items: start;
+    }
+
+    .me-left h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 4.5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--off-white);
+    }
+
+    .me-left h2 em {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+      display: block;
+    }
+
+    .me-right p {
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.9;
+      margin-bottom: 1.25rem;
+    }
+
+    .me-right p strong {
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 2rem;
+    }
+
+    .tag {
+      font-size: 0.68rem;
+      font-weight: 400;
+      padding: 0.3rem 0.85rem;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .tag:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* VISION */
+    #vision {
+      border-top: 1px solid var(--border);
+      background: var(--bg-card);
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 6rem;
+      align-items: start;
+    }
+
+    .vision-left h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 4.5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--off-white);
+    }
+
+    .vision-left h2 em {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+      display: block;
+    }
+
+    .vision-stat {
+      margin-top: 2.5rem;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+    }
+
+    .vision-stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .vision-stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+      font-weight: 300;
+      line-height: 1.5;
+    }
+
+    .vision-right p {
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.9;
+      margin-bottom: 1.25rem;
+    }
+
+    .vision-right p strong { font-weight: 500; color: var(--accent); }
+
+    /* PROJECTS */
+    #projects {
+      border-top: 1px solid var(--border);
+    }
+
+    #projects .projects-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    #projects h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 4.5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--off-white);
+    }
+
+    #projects h2 em {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+    }
+
+    .project-card {
+      background: var(--bg);
+      padding: 2.5rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-card:hover { background: var(--bg-elevated); }
+
+    .project-card::after {
+      content: '→';
+      position: absolute;
+      bottom: 2rem;
+      right: 2rem;
+      font-size: 1.2rem;
+      color: var(--border-hover);
+      transition: color 0.2s, transform 0.2s;
+    }
+
+    .project-card:hover::after { color: var(--accent); transform: translate(3px, -3px); }
+
+    .project-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: rgba(200,168,130,0.12);
+      line-height: 1;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--off-white);
+      margin-bottom: 0.75rem;
+      line-height: 1.2;
+    }
+
+    .project-summary {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .stack-tag {
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      padding: 0.22rem 0.65rem;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* DETAIL OVERLAY */
+    .detail-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .detail-overlay.open {
+      pointer-events: all;
+      opacity: 1;
+    }
+
+    .detail-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(18,15,12,0.7);
+      backdrop-filter: blur(4px);
+    }
+
+    .detail-panel {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 560px;
+      height: 100vh;
+      background: var(--bg-elevated);
+      border-left: 1px solid var(--border);
+      padding: 3.5rem 3rem;
+      overflow-y: auto;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    .detail-overlay.open .detail-panel { transform: translateX(0); }
+
+    .detail-close {
+      position: absolute;
+      top: 1.5rem; right: 1.5rem;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.8rem;
+      padding: 0.35rem 0.75rem;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: 0.06em;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .detail-close:hover { border-color: var(--accent); color: var(--accent); }
+
+    .detail-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 5rem;
+      font-weight: 900;
+      color: rgba(200,168,130,0.08);
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+
+    .detail-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--off-white);
+      line-height: 1.15;
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.9;
+      margin-bottom: 2rem;
+    }
+
+    .detail-section-label {
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+
+    .detail-features {
+      list-style: none;
+      margin-bottom: 2rem;
+    }
+
+    .detail-features li {
+      font-size: 0.85rem;
+      color: var(--muted);
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      line-height: 1.6;
+    }
+
+    .detail-features li::before {
+      content: '—';
+      color: var(--accent);
+      opacity: 0.5;
+      flex-shrink: 0;
+    }
+
+    .detail-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 2rem;
+    }
+
+    .detail-github {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--off-white);
+      border: 1px solid var(--border-hover);
+      padding: 0.65rem 1.5rem;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .detail-github:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: var(--off-white);
+    }
+
+    .footer-right {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* LOADING */
+    .projects-loading {
+      grid-column: 1 / -1;
+      padding: 3rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 860px) {
+      nav { padding: 1.25rem 1.5rem; }
+      .nav-links { gap: 1.5rem; }
+      section { padding: 5rem 1.5rem; }
+      .hero { padding: 7rem 1.5rem 4rem; }
+      #me, #vision { grid-template-columns: 1fr; gap: 2.5rem; }
+      .projects-grid { grid-template-columns: 1fr; }
+      footer { padding: 2rem 1.5rem; }
+      .detail-panel { max-width: 100%; border-left: none; border-top: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="nav-logo">Uzair Naufil</a>
+    <ul class="nav-links">
+      <li><a href="#me">Me</a></li>
+      <li><a href="#vision">Vision</a></li>
+      <li><a href="#projects">Projects</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-tag">AI Builder · Karachi, Pakistan</div>
+      <h1>UZAIR<br><em>NAUFIL</em></h1>
+      <p class="hero-desc">I direct AI to build real products — then audit, pressure-test, and deploy them. Not a developer in the traditional sense. Something newer.</p>
+      <div class="hero-cta">
+        <a href="#projects" class="btn-primary">See my work</a>
+        <a href="#vision" class="btn-ghost">My vision</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ME -->
+  <section id="me">
+    <div class="me-left reveal">
+      <div class="section-eyebrow">Who I am</div>
+      <h2>An architect<br>of <em>AI-directed</em><br>systems.</h2>
+    </div>
+    <div class="me-right reveal">
+      <p>I'm a student at <strong>Aptech Karachi</strong>, enrolled in the 3-year ACCP AI program. My real education happens outside the classroom — building, shipping, and breaking things with AI.</p>
+      <p>My approach is <strong>AI-directed development</strong>: I define the problem, architect the solution, and direct AI to generate the code. Then I run a <strong>multi-AI review pipeline</strong> — having separate models audit each other's output for security vulnerabilities and logical gaps before anything ships.</p>
+      <p>I've shipped two real-world applications. Both solve genuine problems for real users — not academic exercises.</p>
+      <div class="tags">
+        <span class="tag">Claude AI</span>
+        <span class="tag">Groq API</span>
+        <span class="tag">Ollama</span>
+        <span class="tag">Supabase</span>
+        <span class="tag">WhatsApp Cloud API</span>
+        <span class="tag">Python</span>
+        <span class="tag">REST APIs</span>
+        <span class="tag">AI Automations</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISION -->
+  <section id="vision">
+    <div class="vision-left reveal">
+      <div class="section-eyebrow">My vision</div>
+      <h2>Karachi<br>on the <em>AI map.</em></h2>
+      <div class="vision-stat">
+        <div class="vision-stat-num">0</div>
+        <div class="vision-stat-label">Official Claude community ambassadors<br>in Pakistan right now</div>
+      </div>
+    </div>
+    <div class="vision-right reveal">
+      <p>Karachi has no Claude community. That is the opportunity — and the reason I'm building one.</p>
+      <p>I'm surrounded by <strong>passionate, ambitious builders</strong> at Aptech who are hungry to work with AI but have no structured space to come together, share knowledge, or collaborate.</p>
+      <p>Pakistan risks being left behind in the global AI revolution — <strong>not because of a lack of talent, but because of a lack of community infrastructure.</strong> I want to fix that in my city.</p>
+      <p>My first step: a hands-on AI builders session at Aptech. No slides, no theory. Attendees bring an idea, we build it with Claude in a single session.</p>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="projects-header reveal">
+      <div>
+        <div class="section-eyebrow">What I've built</div>
+        <h2>Real products.<br><em>Real problems</em> solved.</h2>
+      </div>
+    </div>
+    <div class="projects-grid" id="projects-grid">
+      <div class="projects-loading">Loading projects...</div>
+    </div>
+  </section>
+
+  <!-- 
+  ═══════════════════════════════════════════════════════
+  CERTIFICATES SECTION — ADD WHEN READY
+  ═══════════════════════════════════════════════════════
+  Suggested content per certificate:
+    - Certificate name
+    - Issuing organization  
+    - Date issued
+    - Verification link (optional)
+  
+  Design hint: use the same card style as project cards
+  ═══════════════════════════════════════════════════════
+  -->
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-name">Uzair Naufil</span>
+    <span class="footer-right">Karachi, Pakistan · 2026</span>
+  </footer>
+
+  <!-- DETAIL OVERLAY -->
+  <div class="detail-overlay" id="detail-overlay">
+    <div class="detail-backdrop" onclick="closeDetail()"></div>
+    <div class="detail-panel" id="detail-panel">
+      <button class="detail-close" onclick="closeDetail()">Close ✕</button>
+      <div id="detail-content"></div>
+    </div>
+  </div>
+
+  <!-- SUPABASE -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // ─────────────────────────────────────────
+    // PASTE YOUR SUPABASE CREDENTIALS HERE
+    const SUPABASE_URL  = 'https://khlkbodmeexczjpzhylp.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtobGtib2RtZWV4Y3pqcHpoeWxwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwODM4ODEsImV4cCI6MjA5NTY1OTg4MX0.pSTtm01PEaaVwE-iKwrIq87egdAyRvmCDvkaIs0Jnf8';
+    // ─────────────────────────────────────────
+
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    async function loadProjects() {
+      const grid = document.getElementById('projects-grid');
+      try {
+        const { data, error } = await sb.from('projects').select('*').order('created_at', { ascending: true });
+        if (error) throw error;
+        if (!data || data.length === 0) {
+          grid.innerHTML = '<div class="projects-loading">No projects yet.</div>';
+          return;
+        }
+        grid.innerHTML = data.map((p, i) => `
+          <div class="project-card reveal" onclick="openDetail(${JSON.stringify(p).replace(/"/g, '&quot;')})">
+            <div class="project-num">0${i + 1}</div>
+            <h3 class="project-title">${p.title}</h3>
+            <p class="project-summary">${p.summary}</p>
+            <div class="project-stack">
+              ${(p.stack || []).map(s => `<span class="stack-tag">${s}</span>`).join('')}
+            </div>
+          </div>
+        `).join('');
+        observeReveal();
+      } catch (e) {
+        grid.innerHTML = '<div class="projects-loading">Could not load projects.</div>';
+      }
+    }
+
+    function openDetail(p) {
+      const content = document.getElementById('detail-content');
+      content.innerHTML = `
+        <div class="detail-num">${p.number || '01'}</div>
+        <h2 class="detail-title">${p.title}</h2>
+        <p class="detail-desc">${p.description}</p>
+        <div class="detail-section-label">Features</div>
+        <ul class="detail-features">
+          ${(p.features || []).map(f => `<li>${f}</li>`).join('')}
+        </ul>
+        <div class="detail-section-label">Stack</div>
+        <div class="detail-stack">
+          ${(p.stack || []).map(s => `<span class="stack-tag">${s}</span>`).join('')}
+        </div>
+        ${p.github ? `<a href="${p.github}" target="_blank" class="detail-github">↗ View on GitHub</a>` : ''}
+      `;
+      document.getElementById('detail-overlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDetail() {
+      document.getElementById('detail-overlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
+
+    // REVEAL OBSERVER
+    function observeReveal() {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    }
+
+    observeReveal();
+    loadProjects();
+  </script>
+</body>
+</html>
